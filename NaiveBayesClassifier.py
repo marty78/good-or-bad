@@ -7,8 +7,14 @@ def trainClassifier(training_file):
 	raw_data = training_raw.readlines()
 	num_good = 0
 	num_bad = 0
+
+	word_freq = {}
 	word_count = {}
+	words_covered = []
+
 	for document in raw_data:
+		words_covered = []
+
 		document = document.replace('.','')
 		document = document.replace(',','')
 		document = document.replace(':','')
@@ -38,17 +44,34 @@ def trainClassifier(training_file):
 
 		for word in words:
 			word = stemming(word)
-			if(word in word_count):
-				word_count[word][category] += 1
+
+			if(word not in words_covered):
+				if(word in word_count):
+					word_count[word][category] += 1
+					word_freq[word][category] += 1
+					words_covered.append(word)
+				else:
+					word_freq[word] = [0,0]
+					word_count[word] = [0,0]
+					word_freq[word][category] += 1
+					word_count[word][category] += 1
+					words_covered.append(word)
 			else:
-				word_count[word] = [0,0]
-				word_count[word][category] += 1
+				word_freq[word][category] += 1
+
+			# if(word in word_count):
+			# 	word_freq[word][category] += 1
+			# 	if(word not in words_covered):
+			# 		word_count
+
+			# else:
+			# 	word_freq[word] = [0,0]
+			# 	word_freq[word][category] += 1
 
 	training_raw.close()
-	prior_good = num_good/(num_good + num_bad)
-	prior_bad = num_bad/(num_bad + num_good)
-
 	return num_good, num_bad, word_count
+
+
 
 def classify(testing_file, num_good_training, num_bad_trainig, word_count):
 	testing_raw = open(testing_file, 'r')
@@ -59,8 +82,11 @@ def classify(testing_file, num_good_training, num_bad_trainig, word_count):
 
 	prior_good = num_good_training/(num_good_training + num_bad_trainig)
 	prior_bad = num_bad_trainig/(num_good_training + num_bad_trainig)
+
 	counter = 0
+
 	print word_count
+
 	for document in raw_data:
 		document = document.replace('.','')
 		document = document.replace(',','')
@@ -92,13 +118,8 @@ def classify(testing_file, num_good_training, num_bad_trainig, word_count):
 		sum_bad = 0
 
 		for word in words:
-			counter += 1
 			word = stemming(word)
-			# print word_count[word]
 			if(word in word_count):
-				# print counter
-				# print word
-				# print word_count[word]
 
 				if(word_count[word][1] == 0):
 					prob_word_good == 0.00000001
@@ -119,15 +140,24 @@ def classify(testing_file, num_good_training, num_bad_trainig, word_count):
 		if(sum_good > sum_bad):
 			if(category == 1):
 				correctly_classified += 1
-			# print 'Guess: GOOD\n'
+			# 	print 'Guess: GOOD'
+			# else:
+			# 	print 'Guess: BAD'
 		else:
 			if(category == 0):
 				correctly_classified += 1
-			# print 'Guess: BAD\n'
+			# 	print 'Guess: GOOD'
+			# else:
+			# 	print 'Guess: BAD'
 
 		num_documents += 1
+		counter += 1
+		# print num_documents
+		# print correctly_classified,'\n'
 
 	return correctly_classified, num_documents
+
+
 
 def stemming(word):
 	if(word[-1] == 's'):
