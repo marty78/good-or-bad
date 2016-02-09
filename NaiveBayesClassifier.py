@@ -14,22 +14,7 @@ def trainClassifier(training_file):
 
 	for document in raw_data:
 		words_covered = []
-
-		document = document.replace('.','')
-		document = document.replace(',','')
-		document = document.replace(':','')
-		document = document.replace('?','')
-		document = document.replace('!','')
-		document = document.replace("'",'')
-		document = document.replace('-','')
-		document = document.replace('<','')
-		document = document.replace('>','')
-		document = document.replace('(','')
-		document = document.replace(')','')
-		document = document.replace('/',' ')
-		document = document.replace('*','')
-		document = document.replace('<br /><br />', ' ')
-		# document = document.replace('\xc2\x97', ' ')
+		document = removeSym(document)
 		document = document.lower()
 
 		words = document.split()
@@ -85,23 +70,10 @@ def classify(testing_file, num_good_training, num_bad_trainig, word_count):
 
 	counter = 0
 
-	print word_count
+	# print word_count
 
 	for document in raw_data:
-		document = document.replace('.','')
-		document = document.replace(',','')
-		document = document.replace(':','')
-		document = document.replace('?','')
-		document = document.replace('!','')
-		document = document.replace("'",'')
-		document = document.replace('-','')
-		document = document.replace('<','')
-		document = document.replace('>','')
-		document = document.replace('(','')
-		document = document.replace(')','')
-		document = document.replace('/',' ')
-		document = document.replace('<br /><br />', ' ')
-		# document = document.replace('\xc2\x97', ' ')
+		document = removeSym(document)
 		document = document.lower()
 
 		words = document.split()
@@ -119,8 +91,8 @@ def classify(testing_file, num_good_training, num_bad_trainig, word_count):
 
 		for word in words:
 			word = stemming(word)
-			if(word in word_count):
 
+			if(word in word_count):
 				if(word_count[word][1] == 0):
 					prob_word_good == 0.00000001
 				else:
@@ -136,25 +108,30 @@ def classify(testing_file, num_good_training, num_bad_trainig, word_count):
 
 		sum_good += math.log(prior_good)
 		sum_bad += math.log(prior_bad)
+		print sum_good
+		print sum_bad,
+
 
 		if(sum_good > sum_bad):
+			print 'sum_good > sum_bad'
 			if(category == 1):
 				correctly_classified += 1
-			# 	print 'Guess: GOOD'
-			# else:
-			# 	print 'Guess: BAD'
+				print 'Guess: GOOD\n'
+			else:
+				print 'Guess: BAD\n'
 		else:
+			print 'sum_good < sum_bad'
 			if(category == 0):
 				correctly_classified += 1
-			# 	print 'Guess: GOOD'
-			# else:
-			# 	print 'Guess: BAD'
+				print 'Guess: GOOD\n'
+			else:
+				print 'Guess: BAD\n'
 
 		num_documents += 1
 		counter += 1
 		# print num_documents
 		# print correctly_classified,'\n'
-
+	testing_raw.close()
 	return correctly_classified, num_documents
 
 
@@ -164,6 +141,23 @@ def stemming(word):
 		if(word[-4:] == 'sses'):
 			word = word[:-2]
 	return word
+
+def removeSym(document):
+	document = document.replace('.','')
+	document = document.replace(',','')
+	document = document.replace(':','')
+	document = document.replace('?','')
+	document = document.replace('!','')
+	document = document.replace("'",'')
+	document = document.replace('-','')
+	document = document.replace('<','')
+	document = document.replace('>','')
+	document = document.replace('(','')
+	document = document.replace(')','')
+	document = document.replace('/',' ')
+	document = document.replace('<br /><br />', ' ')
+	# document = document.replace('\xc2\x97', ' ')
+	return document
 
 
 
