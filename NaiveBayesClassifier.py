@@ -138,8 +138,8 @@ def main():
 	num_good_training, num_bad_training, word_freq, time_training = trainClassifier(training_file)
 	correctly_classified_train, num_documents_train, _ = classify(training_file, num_good_training, num_bad_training, word_freq,0)
 	correctly_classified_test, num_documents_test, time_testing = classify(testing_file, num_good_training, num_bad_training, word_freq,1)
-	print time_training, 'seconds (training)'
-	print time_testing, 'seconds (labeling)'
+	print "%1.f"% time_training, 'seconds (training)'
+	print "%1.f"% time_testing, 'seconds (labeling)'
 	print correctly_classified_train/num_documents_train, '(training)'
 	print correctly_classified_test/num_documents_test, '(testing)'
 
