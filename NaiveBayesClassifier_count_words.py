@@ -46,7 +46,6 @@ def trainClassifier(training_file):
 				word_freq[word][category] += 1
 
 	training_raw.close()
-
 	execution_time = time.time() - start_time
 	return noOfPositiveWords, noOfNegativeWords, word_freq, execution_time
 
@@ -130,12 +129,47 @@ def main():
 	training_file = sys.argv[1]
 	testing_file = sys.argv[2]
 	num_good_training, num_bad_training, word_freq, time_training = trainClassifier(training_file)
-	correctly_classified_train, num_documents_train, _ = classify(training_file, num_good_training, num_bad_training, word_freq,0)
-	correctly_classified_test, num_documents_test, time_testing = classify(testing_file, num_good_training, num_bad_training, word_freq,1)
-	print "%1.f"% time_training, 'seconds (training)'
-	print "%1.f"% time_testing, 'seconds (labeling)'
-	print correctly_classified_train/num_documents_train, '(training)'
-	print correctly_classified_test/num_documents_test, '(testing)'
+	# correctly_classified_train, num_documents_train, _ = classify(training_file, num_good_training, num_bad_training, word_freq,0)
+	# correctly_classified_test, num_documents_test, time_testing = classify(testing_file, num_good_training, num_bad_training, word_freq,1)
+	# print "%1.f"% time_training, 'seconds (training)'
+	# print "%1.f"% time_testing, 'seconds (labeling)'
+	# print correctly_classified_train/num_documents_train, '(training)'
+	# print correctly_classified_test/num_documents_test, '(testing)'
+
+
+	# This part finds the 10 most frequent words in the training set (from good and bad reviews respectively)
+
+	best_good_features = [];
+	best_bad_features = [];
+	word_list = word_freq
+	best_bad_val = word_freq[word_freq.keys()[0]][0]/(word_freq[word_freq.keys()[0]][1] + word_freq[word_freq.keys()[0]][0])
+
+	for i in range (0,10):
+		best_word = word_list.keys()[0]
+		best_good_val = word_freq[word_freq.keys()[0]][1]
+		for word in word_list:
+			current_good_val = word_list[word][1]
+			if(current_good_val > best_good_val):
+				best_word = word
+				best_good_val = current_good_val
+		best_good_features.append(best_word)
+		word_list.pop(best_word)
+
+	for i in range (0,10):
+		best_word = word_list.keys()[0]
+		best_bad_val = word_freq[word_freq.keys()[0]][0]
+		for word in word_list:
+			current_bad_val = word_freq[word][0]
+			if(current_bad_val > best_bad_val):
+				best_word = word
+				best_bad_val = current_bad_val
+		best_bad_features.append(best_word)
+		word_list.pop(best_word)
+
+	print best_good_features
+	print best_bad_features
+
+
 
 
 main()
